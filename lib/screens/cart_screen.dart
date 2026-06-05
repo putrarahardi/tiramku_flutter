@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../services/utils.dart';
 import 'checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
@@ -22,7 +23,7 @@ class CartScreen extends StatelessWidget {
                   Text('Total', style: TextStyle(fontSize: 20)),
                   Spacer(),
                   Chip(
-                    label: Text('Rp ${cart.totalAmount}', style: TextStyle(color: Colors.white)),
+                    label: Text('Rp ${formatNumber(cart.totalAmount)}', style: TextStyle(color: Colors.white)),
                     backgroundColor: Colors.green,
                   ),
                   TextButton(
@@ -47,9 +48,14 @@ class CartScreen extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.all(8),
                     child: ListTile(
-                      leading: CircleAvatar(child: Padding(padding: EdgeInsets.all(5), child: FittedBox(child: Text('Rp${cartItem.price}')))),
+                      leading: cartItem.imageUrl != null
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage('http://10.0.2.2:8000/storage/${cartItem.imageUrl}'),
+                              backgroundColor: Colors.transparent,
+                            )
+                          : CircleAvatar(child: Padding(padding: EdgeInsets.all(5), child: FittedBox(child: Text('Rp${formatNumber(cartItem.price)}')))),
                       title: Text(cartItem.title),
-                      subtitle: Text('Total: Rp${(cartItem.price * cartItem.quantity)}'),
+                      subtitle: Text('Total: Rp${formatNumber(cartItem.price * cartItem.quantity)}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

@@ -34,11 +34,7 @@ class ArticleDetailScreen extends StatelessWidget {
               Container(
                 height: 150,
                 decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF1B4332), Color(0xFF2D6A4F)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Color(0xFF1B4332),
                 ),
                 child: const Center(
                   child: Icon(Icons.menu_book_rounded, color: Colors.white70, size: 60),

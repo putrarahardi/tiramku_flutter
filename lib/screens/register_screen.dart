@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/material.dart'; import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'main_screen.dart';
-import 'register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -19,20 +18,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _login() async {
+  void _register() async {
+    final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Harap isi email dan password Anda.'),
+          content: const Text('Harap isi semua kolom wajib.'),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           backgroundColor: const Color(0xFFE04F6A),
@@ -43,19 +44,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
     final success = await Provider.of<AuthProvider>(context, listen: false)
-        .login(email, password);
+        .register(name, email, password);
     
     setState(() => _isLoading = false);
 
     if (success) {
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => MainScreen()),
+        (route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Login Gagal. Cek kembali email dan password Anda.'),
+          content: const Text('Pendaftaran Gagal. Pastikan email belum terdaftar.'),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           backgroundColor: const Color(0xFFE04F6A),
@@ -73,42 +75,51 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Curved Header Background
+            // Curved Header Background (Compact for Register Form height)
             Stack(
               children: [
                 Container(
-                  height: size.height * 0.38,
+                  height: size.height * 0.32,
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     color: Color(0xFF1B4332),
                     borderRadius: BorderRadius.vertical(
-                      bottom: Radius.elliptical(400, 80),
+                      bottom: Radius.elliptical(400, 60),
                     ),
                   ),
                 ),
                 // Floating Abstract Icons
                 Positioned(
                   left: -20,
-                  top: 40,
+                  top: 30,
                   child: Opacity(
                     opacity: 0.08,
                     child: const Icon(
-                      Icons.eco_rounded,
-                      size: 150,
+                      Icons.person_add_alt_1_rounded,
+                      size: 130,
                       color: Colors.white,
                     ),
                   ),
                 ),
                 Positioned(
                   right: -30,
-                  top: 100,
+                  top: 80,
                   child: Opacity(
                     opacity: 0.05,
                     child: const Icon(
                       Icons.eco_rounded,
-                      size: 120,
+                      size: 100,
                       color: Colors.white,
                     ),
+                  ),
+                ),
+                // Back Button
+                Positioned(
+                  left: 12,
+                  top: 40,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                    onPressed: () => Navigator.pop(context),
                   ),
                 ),
                 // Center Branding
@@ -118,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.12),
                             shape: BoxShape.circle,
@@ -128,28 +139,27 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           child: const Icon(
-                            Icons.eco_rounded,
-                            size: 48,
+                            Icons.person_add_alt_1_rounded,
+                            size: 38,
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 10),
                         const Text(
-                          'tiramku.',
+                          'Daftar Baru',
                           style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            letterSpacing: 1.5,
+                            letterSpacing: 0.8,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
-                          'Budidaya Jamur Tiram Modern',
+                          'Mulai budidaya jamur Anda sekarang',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.white.withOpacity(0.8),
-                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
@@ -159,29 +169,59 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
             
-            // Login Form
+            // Register Form
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Selamat Datang',
+                    'Buat Akun Anda',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1B4332),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Text(
-                    'Silakan masuk untuk melanjutkan aktivitas Anda.',
+                    'Lengkapi data diri untuk memulai pengalaman budidaya.',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
+                  
+                  // Name Field
+                  TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nama Lengkap',
+                      labelStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                      floatingLabelStyle: const TextStyle(
+                        color: Color(0xFF2ECC8E),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.person_outline_rounded,
+                        color: Color(0xFF1B4332),
+                        size: 20,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(color: Colors.grey.shade200, width: 1.5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(color: Color(0xFF2ECC8E), width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 18),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   
                   // Email Field
                   TextField(
@@ -212,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 18),
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 16),
                   
                   // Password Field
                   TextField(
@@ -255,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 18),
                     ),
                   ),
-                  const SizedBox(height: 36),
+                  const SizedBox(height: 32),
                   
                   // Submit Button
                   Container(
@@ -273,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _login,
+                      onPressed: _isLoading ? null : _register,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
@@ -291,7 +331,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : const Text(
-                              'Masuk',
+                              'Daftar Sekarang',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -301,24 +341,22 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 28),
                   
-                  // Navigation to Register
+                  // Navigation to Login
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Belum punya akun? ',
+                        'Sudah punya akun? ',
                         style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => RegisterScreen()),
-                          );
+                          Navigator.pop(context);
                         },
                         child: const Text(
-                          'Daftar Sekarang',
+                          'Masuk di sini',
                           style: TextStyle(
                             color: Color(0xFF1B4332),
                             fontWeight: FontWeight.bold,

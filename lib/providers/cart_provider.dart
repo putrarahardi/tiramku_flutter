@@ -5,8 +5,9 @@ class CartItem {
   final String title;
   final int quantity;
   final int price;
+  final String? imageUrl;
 
-  CartItem({required this.productId, required this.title, required this.quantity, required this.price});
+  CartItem({required this.productId, required this.title, required this.quantity, required this.price, this.imageUrl});
 }
 
 class CartProvider with ChangeNotifier {
@@ -24,7 +25,7 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
-  void addItem(int productId, int price, String title) {
+  void addItem(int productId, int price, String title, {String? imageUrl}) {
     if (_items.containsKey(productId)) {
       _items.update(
         productId,
@@ -33,6 +34,7 @@ class CartProvider with ChangeNotifier {
           title: existingCartItem.title,
           price: existingCartItem.price,
           quantity: existingCartItem.quantity + 1,
+          imageUrl: existingCartItem.imageUrl,
         ),
       );
     } else {
@@ -43,6 +45,7 @@ class CartProvider with ChangeNotifier {
           title: title,
           price: price,
           quantity: 1,
+          imageUrl: imageUrl,
         ),
       );
     }

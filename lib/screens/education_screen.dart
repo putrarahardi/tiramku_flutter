@@ -101,9 +101,7 @@ class _EducationScreenState extends State<EducationScreen> {
                       height: 80,
                       width: double.infinity,
                       decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF2D6A4F), Color(0xFF40916C)],
-                        ),
+                        color: Color(0xFF1B4332),
                       ),
                       child: const Icon(Icons.menu_book_rounded, color: Colors.white, size: 30),
                     ),
